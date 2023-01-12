@@ -11,6 +11,8 @@ module.exports = {
       colors: {
         amazonBlue: {
           light: "#232F3E",
+          lighter: "#37475A",
+          dark: "#398596",
           DEFAULT: "#131921",
         },
         amazonGray: "#DADADA",

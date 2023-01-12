@@ -157,8 +157,15 @@ import "../styles/globals.css";
 import type { AppProps } from "next/app";
 import { Provider } from "react-redux";
 import { store } from "../redux/store";
+import { useEffect, useState } from "react";
 
 function MyApp({ Component, pageProps }: AppProps) {
+  // To fix hydration UI mismatch issues, we need to wait until the component has mounted.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+  if (!mounted) return null;
   return (
     <Provider store={store}>
       <Component {...pageProps} />
@@ -167,6 +174,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 }
 
 export default MyApp;
+
 ```
 
 ## Update next.config.js with image domains for later use:
@@ -410,5 +418,565 @@ function Header({}: Props) {
 }
 
 export default Header;
+
+```
+
+### Install [React Responsive Carousel](https://www.npmjs.com/package/react-responsive-carousel):
+
+```
+npm install react-responsive-carousel
+```
+
+### Create components/Banner.tsx:
+
+```
+import React from "react";
+
+type Props = {};
+
+function Banner({}: Props) {
+  return <div>Banner</div>;
+}
+
+export default Banner;
+
+```
+
+### Update components/index.tsx:
+
+```
+export { default as Header } from "./Header";
+export { default as DropDown } from "./DropDown";
+export { default as Banner } from "./Banner";
+export { default as Footer } from "./Footer";
+```
+
+### Update pages/index.tsx:
+
+```
+import type { NextPage } from "next";
+import Head from "next/head";
+import { Banner, Footer, Header } from "../components";
+
+const Home: NextPage = () => {
+  return (
+    // <div className="flex min-h-screen flex-col items-center justify-center py-2">
+    <div className="bg-gray-100">
+      <Head>
+        <title>Amazon Clone</title>
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+
+      <Header />
+      <main className="max-w-screen-2xl mx-auto">
+        {/* Banner */}
+        <Banner />
+
+        {/* Product Feed */}
+      </main>
+
+      <Footer />
+    </div>
+  );
+};
+
+export default Home;
+
+
+```
+
+### Update components/Banner.tsx:
+
+```
+import Image from "next/image";
+import React from "react";
+import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
+import { Carousel } from "react-responsive-carousel";
+type Props = {};
+
+function Banner({}: Props) {
+  return (
+    <div className="relative">
+      <div className="absolute w-full h-32 bg-gradient-to-t from-gray-100 to-transparent bottom-0 z-20" />
+      <Carousel
+        autoPlay
+        infiniteLoop
+        showStatus={false}
+        showIndicators={false}
+        showThumbs={false}
+        interval={5000}
+      >
+        <div>
+          <img src="/assets/amazon-slide-1.jpg" alt="slide 1" />
+        </div>
+        <div>
+          <img src="/assets/amazon-slide-2.jpg" alt="slide 2" />
+        </div>
+        <div>
+          <img src="/assets/amazon-slide-3.jpg" alt="slide 3" />
+        </div>
+        <div>
+          <img src="/assets/amazon-slide-4.jpg" alt="slide 4" />
+        </div>
+      </Carousel>
+    </div>
+  );
+}
+
+export default Banner;
+
+```
+
+### Using a Rest API like Fake Store API
+
+Update next.config.js to whitelist the domain akestoreapi.com:
+
+```
+/** @type {import('next').NextConfig} */
+module.exports = {
+  reactStrictMode: true,
+  images:{
+    domains:["fakestoreapi.com"]
+  }
+}
+
+```
+
+### Instal React Currency Format
+
+```
+npm i react-currency-format
+npm i --save-dev @types/react-currency-format
+```
+
+### Create typings.d.ts in the root:
+
+```
+interface Product {
+  id: string;
+  title: string;
+  price: string;
+  description: string;
+  category: string;
+  image: string;
+  rating: Rating;
+}
+
+type Rating = {
+  rate: string;
+  count: string;
+};
+
+```
+
+### Update pages/index.tsx:
+
+```
+import Head from "next/head";
+import { Banner, Footer, Header, ProductFeed } from "../components";
+
+type Props = {
+  products: Product[];
+};
+
+const Home = ({ products }: Props) => {
+  return (
+    // <div className="flex min-h-screen flex-col items-center justify-center py-2">
+    <div className="bg-gray-100">
+      <Head>
+        <title>Amazon Clone</title>
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+
+      <Header />
+      <main className="max-w-screen-2xl mx-auto">
+        {/* Banner */}
+        <Banner />
+
+        {/* Product Feed */}
+        <ProductFeed products={products} />
+      </main>
+
+      <Footer />
+    </div>
+  );
+};
+
+export default Home;
+
+// Pre-rendering data
+export async function getServerSideProps(context: any) {
+  const response = await fetch("https://fakestoreapi.com/products");
+  const products = await response.json();
+
+  return {
+    props: {
+      products: products,
+    },
+  };
+}
+
+//https://fakestoreapi.com/products
+
+```
+
+### Create components/ProductFeed.tsx:
+
+```
+import React from "react";
+import Product from "./Product";
+
+type Props = {
+  products: Product[];
+};
+
+function ProductFeed({ products }: Props) {
+  return (
+    <div>
+      {products?.map((product,index) => (
+       <Product key={index} product={product}  />
+      ))}
+    </div>
+  );
+}
+
+export default ProductFeed;
+
+
+
+```
+
+### Create components/Product.tsx:
+
+```
+import React from "react";
+
+type Props = {
+  product: Product;
+};
+
+function Product({ product }: Props) {
+  return <div>Product</div>;
+}
+
+export default Product;
+
+```
+
+### Update styles/globals.tsx:
+
+```
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .navLink {
+    @apply cursor-pointer hover:underline;
+  }
+  .button {
+    @apply p-2 text-xs md:text-sm bg-gradient-to-b from-yellow-200 to-yellow-400 border border-yellow-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 active:from-yellow-500;
+  }
+}
+
+
+```
+
+### Update components/Product.tsx:
+
+```
+import { StarIcon } from "@heroicons/react/24/solid";
+import Image from "next/image";
+import React, { useState } from "react";
+import CurrencyFormat from "react-currency-format";
+
+type Props = {
+  product: Product;
+};
+
+function Product({ product }: Props) {
+  // Generate Random Rating
+  //   const MAX_RATING = 5;
+  //   const MIN_RATING = 1;
+  //   const [rating] = useState(
+  //     Math.floor(Math.random() * (MAX_RATING - MIN_RATING + 1)) + MIN_RATING
+  //   );
+  const starRating = Math.floor(product.rating.rate);
+
+  //Generate Random Prime Delivery Rating
+  const [hasPrime] = useState(Math.random() < 0.5); // If less than 0.5 should have prime delivery
+  return (
+    <div className="relative flex flex-col m-5 bg-white z-30 p-10">
+      <p className="absolute top-2 right-2 text-xs italic text-gray-400">
+        {product.category}
+      </p>
+      <Image
+        src={product.image}
+        alt={product.title}
+        height={200}
+        width={200}
+        className="object-contain mx-auto"
+      />
+      <h4 className="my-3">{product.title}</h4>
+      <div className="flex">
+        {Array(starRating)
+          .fill()
+          .map((_, index) => (
+            <StarIcon className="h-5 text-yellow-500" />
+          ))}
+      </div>
+      <p className="text-xs my-2 line-clamp-2">{product.description}</p>
+      <div className="mb-5">
+        <CurrencyFormat
+          value={product.price}
+          displayType={"text"}
+          thousandSeparator={true}
+          prefix={"£"}
+        />
+      </div>
+      {hasPrime && (
+        <div className="flex items-center space-x-2 -mt-5">
+          <Image
+            src="/assets/amazon-prime.png"
+            alt="prime delivery"
+            width={48}
+            height={48}
+            className=""
+          />
+          <p className="text-xs text-gray-500">FREE Next-day delivery</p>
+        </div>
+      )}
+      <button className="mt-auto button">Add to Basket</button>
+    </div>
+  );
+}
+
+export default Product;
+
+```
+
+### Update components/ProductFeed.tsx:
+
+```
+import Image from "next/image";
+import React from "react";
+import Product from "./Product";
+
+type Props = {
+  products: Product[];
+};
+
+function ProductFeed({ products }: Props) {
+  return (
+    <div className="grid grid-flow-row-dense md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 -mt-20 md:-mt-40 lg:-mt-52 xl:-mt-80">
+      {products?.slice(0, 4).map((product, index) => (
+        <Product key={index} product={product} />
+      ))}
+      <Image
+        className="md:col-span-full mx-auto"
+        src="/assets/amazon-ad.jpeg"
+        alt="Discover your next great read with kindle book deals"
+        width={1500}
+        height={400}
+      />
+      {products?.slice(5, products.length).map((product, index) => (
+        <Product key={index} product={product} />
+      ))}
+    </div>
+  );
+}
+
+export default ProductFeed;
+
+
+```
+
+### Create components/AdBlock.tsx:
+
+```
+import Image from "next/image";
+import Link from "next/link";
+import React from "react";
+
+type Props = {
+  title: string;
+  text: string;
+  image: string;
+};
+
+function AdBlock({ title, text,image }: Props) {
+  return (
+    <div className="bg-white z-30 m-5 p-5">
+      <h2 className="text-lg font-bold">{title}</h2>
+      <Image
+        src={`/assets/${image}.jpg`}
+        width={390}
+        height={390}
+        alt={title}
+        className="object-cover mx-auto py-3"
+      />
+      <Link href="/" className="text-xs text-amazonBlue-dark">
+        {text}
+      </Link>
+    </div>
+  );
+}
+
+export default AdBlock;
+
+```
+
+### Update pages/index.tsx:
+
+```
+
+import Head from "next/head";
+import { AdBlock, Banner, Footer, Header, ProductFeed } from "../components";
+
+type Props = {
+  products: Product[];
+};
+
+const Home = ({ products }: Props) => {
+  return (
+    <div className="bg-gray-100">
+      <Head>
+        <title>Amazon Clone</title>
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+
+      <Header />
+      <main className="max-w-screen-2xl mx-auto">
+        {/* Banner */}
+        <Banner />
+        <div className="grid grid-flow-row-dense md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4  -mt-20 md:-mt-40 lg:-mt-52 xl:-mt-80">
+
+          <AdBlock
+            title="Happy Place: Fearne Cotton"
+            text="Stream now"
+            image="adblock-3"
+          />
+          <AdBlock
+            title="We have a surprise for you"
+            text="See terms and conditions"
+            image="adblock-4"
+          />
+          <AdBlock
+            title="Playlist: Home Gym Workout"
+            text="Stream now"
+            image="adblock-5"
+          />
+          <AdBlock
+            title="New year, new fun on Amazon Kids+"
+            text="1-month free trial"
+            image="adblock-6"
+          />
+        </div>
+        {/* Product Feed */}
+        <ProductFeed products={products} />
+      </main>
+
+      <Footer />
+    </div>
+  );
+};
+
+export default Home;
+
+// Pre-rendering data
+export async function getServerSideProps(context: any) {
+  const response = await fetch("https://fakestoreapi.com/products");
+  const products = await response.json();
+
+  return {
+    props: {
+      products: products,
+    },
+  };
+}
+
+
+```
+
+### Update styles/globals.css:
+
+```
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .navLink {
+    @apply cursor-pointer hover:underline;
+  }
+  .button {
+    @apply p-2 text-xs md:text-sm bg-gradient-to-b from-yellow-200 to-yellow-400 border border-yellow-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 active:from-yellow-500;
+  }
+  .carousel.carousel-slider .control-arrow {
+    @apply cursor-pointer !bg-gray-100 !shadow-lg !my-auto h-1/2 rounded-sm  hover:!bg-gray-200  !p-5;
+  }
+  .carousel .control-prev.control-arrow:before {
+    @apply !border-r-black;
+  }
+  .carousel .control-next.control-arrow:before {
+    @apply !border-l-black;
+  }
+}
+
+
+```
+
+### Create components/BestSellers.tsx:
+
+```
+import React from "react";
+import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
+import { Carousel } from "react-responsive-carousel";
+import Product from "./Product";
+import Image from "next/image";
+type Props = {
+  products: Product[];
+  title: string;
+};
+
+function BestSellers({ products, title }: Props) {
+  console.log(products);
+  return (
+    <div className="m-5">
+      <div className="bg-white p-5">
+        <h2 className="font-bold text-xl">{title}</h2>
+        <Carousel
+          autoPlay
+          infiniteLoop
+          showStatus={false}
+          showIndicators={false}
+          showThumbs={false}
+          interval={5000}
+          centerMode={true}
+          centerSlidePercentage={20}
+          className="carousel bg-white"
+        >
+          {products?.map((product, index) => (
+            <Image
+              key={index}
+              src={product.image}
+              alt={product.title}
+              width={180}
+              height={250}
+              className=" bg-white p-5 h-60 object-contain"
+            />
+          ))}
+        </Carousel>
+      </div>
+    </div>
+  );
+}
+
+export default BestSellers;
+
+```
+
+### Update pages/index.tsx:
+```
 
 ```
