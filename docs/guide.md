@@ -556,6 +556,7 @@ npm install react-currency-formatter --save --force
 npm install --save --legacy-peer-deps
 npm cache clean --force
 npm config set legacy-peer-deps true
+npm install
 ```
 
 ### Create typings.d.ts in the root:
