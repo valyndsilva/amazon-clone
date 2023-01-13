@@ -57,7 +57,7 @@ module.exports = {
 # Authentication
 GOOGLE_ID=key_goes_here
 GOOGLE_SECRET=key_goes_here
-
+JWT_SECRET=secret_goes here
 NEXTAUTH_URL=http://localhost:3000
 # Stripe
 STRIPE_PUBLIC_KEY=key_goes_here
@@ -1377,6 +1377,12 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 ```
 
+### Generate NEXT SECRET to use as JWT_SECRET in .env.local:
+
+```
+openssl rand -base64 32
+```
+
 ### Create pages/ap/auth/[...nextauth].tsx:
 
 ```
@@ -1392,6 +1398,8 @@ export default NextAuth({
       clientSecret: process.env.GOOGLE_SECRET as string,
     }),
   ],
+
+  secret: process.env.JWT_SECRET, // if not defined you get an error [NO SECRET]
 });
 
 ```
@@ -1597,7 +1605,7 @@ Copy the Google Client ID and Secret and add it into your .env.local file.
 # Authentication
 GOOGLE_ID=key_goes_here
 GOOGLE_SECRET=key_goes_here
-
+JWT_SECRET=secret_goes_here
 NEXTAUTH_URL=http://localhost:3000
 # Stripe
 STRIPE_PUBLIC_KEY=key_goes_here
