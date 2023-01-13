@@ -1,8 +1,7 @@
 import { StarIcon } from "@heroicons/react/24/solid";
 import Image from "next/image";
 import React, { useState } from "react";
-import Currency from "react-currency-formatter";
-
+// import Currency from "react-currency-formatter";
 
 type Props = {
   product: Product;
@@ -41,10 +40,11 @@ function Product({ product }: Props) {
       </div>
       <p className="text-xs my-2 line-clamp-2">{product.description}</p>
       <div className="mb-5">
-        <Currency
+        {/* <Currency
           quantity={Number(product.price)}
           currency="GBP"
-        />
+        /> */}
+        £{product.price}
       </div>
       {hasPrime && (
         <div className="flex items-center space-x-2 -mt-5">
