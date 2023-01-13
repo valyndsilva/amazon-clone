@@ -14,6 +14,7 @@ function Banner({}: Props) {
         showStatus={false}
         showIndicators={false}
         showThumbs={false}
+        showArrows={false}
         interval={5000}
       >
         <div>

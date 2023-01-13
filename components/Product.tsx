@@ -1,7 +1,8 @@
 import { StarIcon } from "@heroicons/react/24/solid";
 import Image from "next/image";
 import React, { useState } from "react";
-import CurrencyFormat from "react-currency-format";
+import Currency from "react-currency-formatter";
+
 
 type Props = {
   product: Product;
@@ -28,7 +29,7 @@ function Product({ product }: Props) {
         alt={product.title}
         height={200}
         width={200}
-        className="object-contain mx-auto"
+        className="object-contain mx-auto h-60"
       />
       <h4 className="my-3">{product.title}</h4>
       <div className="flex">
@@ -40,11 +41,9 @@ function Product({ product }: Props) {
       </div>
       <p className="text-xs my-2 line-clamp-2">{product.description}</p>
       <div className="mb-5">
-        <CurrencyFormat
-          value={product.price}
-          displayType={"text"}
-          thousandSeparator={true}
-          prefix={"£"}
+        <Currency
+          quantity={Number(product.price)}
+          currency="GBP"
         />
       </div>
       {hasPrime && (

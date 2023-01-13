@@ -28,15 +28,7 @@ function LightiningDeals({ products, title }: Props) {
           className="carousel bg-white"
         >
           {products?.map((product, index) => (
-            <Deal productTitle={product.title} image={product.image} />
-            // <Image
-            //   key={index}
-            //   src={product.image}
-            //   alt={product.title}
-            //   width={180}
-            //   height={250}
-            //   className=" bg-white p-5 h-60 object-contain"
-            // />
+            <Deal key={index} productTitle={product.title} image={product.image} />
           ))}
         </Carousel>
       </div>

@@ -542,11 +542,11 @@ module.exports = {
 
 ```
 
-### Instal React Currency Format
+### Install [React Currency Formatter](https://www.npmjs.com/package/react-currency-formatter)
 
 ```
-npm i react-currency-format
-npm i --save-dev @types/react-currency-format
+npm i react-currency-formatter
+npm i --save-dev @types/react-currency-formatter
 ```
 
 ### Create typings.d.ts in the root:
@@ -688,7 +688,8 @@ export default Product;
 import { StarIcon } from "@heroicons/react/24/solid";
 import Image from "next/image";
 import React, { useState } from "react";
-import CurrencyFormat from "react-currency-format";
+import Currency from "react-currency-formatter";
+
 
 type Props = {
   product: Product;
@@ -715,23 +716,21 @@ function Product({ product }: Props) {
         alt={product.title}
         height={200}
         width={200}
-        className="object-contain mx-auto"
+        className="object-contain mx-auto h-60"
       />
       <h4 className="my-3">{product.title}</h4>
       <div className="flex">
         {Array(starRating)
-          .fill()
+          .fill(undefined)
           .map((_, index) => (
             <StarIcon className="h-5 text-yellow-500" />
           ))}
       </div>
       <p className="text-xs my-2 line-clamp-2">{product.description}</p>
       <div className="mb-5">
-        <CurrencyFormat
-          value={product.price}
-          displayType={"text"}
-          thousandSeparator={true}
-          prefix={"£"}
+        <Currency
+          quantity={Number(product.price)}
+          currency="GBP"
         />
       </div>
       {hasPrime && (
@@ -768,9 +767,9 @@ type Props = {
 
 function ProductFeed({ products }: Props) {
   return (
-    <div className="grid grid-flow-row-dense md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 -mt-20 md:-mt-40 lg:-mt-52 xl:-mt-80">
-      {products?.slice(0, 4).map((product, index) => (
-        <Product key={index} product={product} />
+    <div className="grid grid-flow-row-dense md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      {products?.slice(0, 4).map((product) => (
+        <Product key={product.id} product={product} />
       ))}
       <Image
         className="md:col-span-full mx-auto"
@@ -779,15 +778,15 @@ function ProductFeed({ products }: Props) {
         width={1500}
         height={400}
       />
-      {products?.slice(5, products.length).map((product, index) => (
-        <Product key={index} product={product} />
+      {/* {products?.slice(5, products.length).map((product) => ( */}
+      {products?.slice(5, 13).map((product) => (
+        <Product key={product.id} product={product} />
       ))}
     </div>
   );
 }
 
 export default ProductFeed;
-
 
 ```
 
@@ -800,14 +799,16 @@ import React from "react";
 
 type Props = {
   title: string;
+  productTitle?: string;
   text: string;
   image: string;
+  deal?: boolean;
 };
 
-function AdBlock({ title, text,image }: Props) {
+function AdBlock({ title, productTitle, text, image, deal }: Props) {
   return (
     <div className="bg-white z-30 m-5 p-5">
-      <h2 className="text-lg font-bold">{title}</h2>
+      <h2 className="text-xl font-bold">{title}</h2>
       <Image
         src={`/assets/${image}.jpg`}
         width={390}
@@ -815,6 +816,16 @@ function AdBlock({ title, text,image }: Props) {
         alt={title}
         className="object-cover mx-auto py-3"
       />
+      {deal && (
+        <div className="flex space-x-2 items-center">
+          <span className="bg-red-700 px-1 py-2 text-xs text-white">
+            Up to 63% off
+          </span>
+          <span className="text-red-700 p-1 font-bold text-xs">Deal</span>
+        </div>
+      )}
+      {productTitle && <p className="text-xs pt-2 pb-5">{productTitle}</p>}
+
       <Link href="/" className="text-xs text-amazonBlue-dark">
         {text}
       </Link>
@@ -823,78 +834,6 @@ function AdBlock({ title, text,image }: Props) {
 }
 
 export default AdBlock;
-
-```
-
-### Update pages/index.tsx:
-
-```
-
-import Head from "next/head";
-import { AdBlock, Banner, Footer, Header, ProductFeed } from "../components";
-
-type Props = {
-  products: Product[];
-};
-
-const Home = ({ products }: Props) => {
-  return (
-    <div className="bg-gray-100">
-      <Head>
-        <title>Amazon Clone</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
-      <Header />
-      <main className="max-w-screen-2xl mx-auto">
-        {/* Banner */}
-        <Banner />
-        <div className="grid grid-flow-row-dense md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4  -mt-20 md:-mt-40 lg:-mt-52 xl:-mt-80">
-
-          <AdBlock
-            title="Happy Place: Fearne Cotton"
-            text="Stream now"
-            image="adblock-3"
-          />
-          <AdBlock
-            title="We have a surprise for you"
-            text="See terms and conditions"
-            image="adblock-4"
-          />
-          <AdBlock
-            title="Playlist: Home Gym Workout"
-            text="Stream now"
-            image="adblock-5"
-          />
-          <AdBlock
-            title="New year, new fun on Amazon Kids+"
-            text="1-month free trial"
-            image="adblock-6"
-          />
-        </div>
-        {/* Product Feed */}
-        <ProductFeed products={products} />
-      </main>
-
-      <Footer />
-    </div>
-  );
-};
-
-export default Home;
-
-// Pre-rendering data
-export async function getServerSideProps(context: any) {
-  const response = await fetch("https://fakestoreapi.com/products");
-  const products = await response.json();
-
-  return {
-    props: {
-      products: products,
-    },
-  };
-}
-
 
 ```
 
@@ -974,9 +913,383 @@ function BestSellers({ products, title }: Props) {
 
 export default BestSellers;
 
+
+```
+
+### Create components/LightningDeals.tsx:
+
+```
+import React from "react";
+import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
+import { Carousel } from "react-responsive-carousel";
+import Image from "next/image";
+import Deal from "./Deal";
+type Props = {
+  products: Product[];
+  title: string;
+};
+
+function LightiningDeals({ products, title }: Props) {
+  console.log(products);
+  return (
+      <div className="m-5 bg-white p-5">
+        <div className="flex items-center space-x-4">
+          <h2 className="font-bold text-xl">{title}</h2>
+          <span className="text-sm text-amazonBlue-dark">See more</span>
+        </div>
+        <Carousel
+          autoPlay
+          infiniteLoop
+          showStatus={false}
+          showIndicators={false}
+          showThumbs={false}
+          interval={5000}
+          centerMode={true}
+          centerSlidePercentage={20}
+          className="carousel bg-white"
+        >
+          {products?.map((product, index) => (
+            <Deal key={index} productTitle={product.title} image={product.image} />
+          ))}
+        </Carousel>
+      </div>
+  );
+}
+
+export default LightiningDeals;
+
+```
+
+### Create components/SimpleBlock.tsx:
+
+```
+import React from "react";
+import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
+import { Carousel } from "react-responsive-carousel";
+import Product from "./Product";
+import Image from "next/image";
+type Props = {
+  title: string;
+};
+
+function SimpleBlock({ title }: Props) {
+  const products = [
+    "/assets/device-1.jpg",
+    "/assets/device-2.jpg",
+    "/assets/device-3.jpg",
+    "/assets/device-4.jpg",
+    "/assets/device-5.jpg",
+    "/assets/device-6.jpg",
+    "/assets/device-7.jpg",
+    "/assets/device-8.jpg",
+    "/assets/device-9.jpg",
+    "/assets/device-10.jpg",
+    "/assets/device-11.jpg",
+    "/assets/device-12.jpg",
+  ];
+  return (
+    <div className="m-5">
+      <div className="bg-white p-5">
+        <div className="flex items-center space-x-4">
+          <h2 className="font-bold text-xl">{title}</h2>
+          <span className="text-sm text-amazonBlue-dark">See more</span>
+        </div>
+        <Carousel
+          autoPlay
+          infiniteLoop
+          showStatus={false}
+          showIndicators={false}
+          showThumbs={false}
+          interval={5000}
+          centerMode={true}
+          centerSlidePercentage={20}
+          className="carousel bg-white"
+        >
+          {products?.map((image, index) => (
+            <Image
+              key={index}
+              src={image}
+              alt="amazon device"
+              width={180}
+              height={250}
+              className=" bg-white p-5 h-60 object-contain"
+            />
+          ))}
+        </Carousel>
+      </div>
+    </div>
+  );
+}
+
+export default SimpleBlock;
+
+```
+
+### Create components/Deal.tsx:
+
+```
+import Image from "next/image";
+import React from "react";
+
+type Props = {
+  productTitle: string;
+  image: string;
+};
+
+function Deal({ image, productTitle }: Props) {
+  return (
+    <div>
+      <Image
+        src={image}
+        width={390}
+        height={390}
+        alt={productTitle}
+        className="object-contain mx-auto py-3 p-5 h-60"
+      />
+      <div className="flex space-x-2 items-center">
+        <span className="bg-red-700 px-1 py-2 text-xs text-white">
+          Up to 50% off
+        </span>
+        <span className="text-red-700 p-1 font-bold text-xs">Deal</span>
+      </div>
+      <p className="text-xs pt-2 pb-5">{productTitle}</p>
+    </div>
+  );
+}
+
+export default Deal;
+
+```
+
+### Create components/Deals.tsx:
+
+```
+import Link from "next/link";
+import React from "react";
+import Deal from "./Deal";
+
+type Props = {
+  title: string;
+  productTitle: string;
+  text: string;
+  image: string;
+};
+
+function Deals({ title, productTitle, text, image }: Props) {
+  return (
+    <div className="bg-white z-30 m-5 p-5">
+      <h2 className="text-lg font-bold">{title}</h2>
+      <Deal productTitle={productTitle} image={image} />
+      <Link href="/" className="text-xs text-amazonBlue-dark">
+        {text}
+      </Link>
+    </div>
+  );
+}
+
+export default Deals;
+
+```
+
+### Update components/index.tsx:
+
+```
+export { default as Header } from "./Header";
+export { default as DropDown } from "./DropDown";
+export { default as Banner } from "./Banner";
+export { default as ProductFeed } from "./ProductFeed";
+export { default as AdBlock } from "./AdBlock";
+export { default as BestSellers } from "./BestSellers";
+export { default as Deals } from "./Deals";
+export { default as Deal } from "./Deal";
+export { default as LightningDeals } from "./LightningDeals";
+export { default as SimpleBlock } from "./SimpleBlock";
+export { default as Footer } from "./Footer";
+
 ```
 
 ### Update pages/index.tsx:
+
 ```
+import Head from "next/head";
+import Image from "next/image";
+import {
+  AdBlock,
+  Banner,
+  BestSellers,
+  Deals,
+  Footer,
+  Header,
+  LightningDeals,
+  ProductFeed,
+  SimpleBlock,
+} from "../components";
+
+type Props = {
+  products: Product[];
+  jewelery: Product[];
+  mensClothing: Product[];
+  womensClothing: Product[];
+  electronics: Product[];
+};
+
+const Home = ({
+  products,
+  jewelery,
+  electronics,
+  mensClothing,
+  womensClothing,
+}: Props) => {
+  return (
+    <div className="bg-gray-100">
+      <Head>
+        <title>Amazon Clone</title>
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+
+      <Header />
+      <main className="max-w-screen-2xl mx-auto">
+        {/* Banner */}
+        <Banner />
+        <div className="grid  md:grid-cols-2 lg:grid-cols-4 -mt-20 md:-mt-40 lg:-mt-52 xl:-mt-80">
+          <Deals
+            title="Top Deal"
+            productTitle="Oral Care, Shaving Appliances and Beauty by Oral B, Braun, Olay and Pantene"
+            text="Show more deals"
+            image="/assets/adblock-1.jpg"
+          />
+          <AdBlock
+            title="More titles to explore than ever"
+            text="Browse Kindle Unlimited"
+            image="adblock-2"
+          />
+          <AdBlock
+            title="Unlimited streaming of movies & TV"
+            text="Find out more"
+            image="adblock-11"
+          />
+          <div className="z-30 m-5 p-5">
+            <Image
+              src={`/assets/adblock-12.jpg`}
+              width={390}
+              height={250}
+              alt="Warm essentials for baby's first winter - Shop Now"
+              className="object-cover mx-auto py-3"
+            />
+            <div className="flex flex-col bg-white p-5">
+              <h2 className="text-lg font-bold mb-2">
+                Sign in for your best experience
+              </h2>
+              <button className="mt-auto button">Sign in securely</button>
+            </div>
+          </div>
+        </div>
+        <div className="grid grid-flow-row-dense md:grid-cols-2 lg:grid-cols-4 ">
+          <AdBlock
+            title="Happy Place: Fearne Cotton"
+            text="Stream now"
+            image="adblock-3"
+          />
+          <AdBlock
+            title="We have a surprise for you"
+            text="See terms and conditions"
+            image="adblock-4"
+          />
+          <AdBlock
+            title="Playlist: Home Gym Workout"
+            text="Stream now"
+            image="adblock-5"
+          />
+          <AdBlock
+            title="New year, new fun on Amazon Kids+"
+            text="1-month free trial"
+            image="adblock-6"
+          />
+        </div>
+
+        <BestSellers
+          products={mensClothing}
+          title="Best Sellers in Men's Clothing"
+        />
+        <BestSellers
+          products={electronics}
+          title="Best Sellers in Computers & Accessories"
+        />
+        {/* <BestSellers
+          products={womensClothing}
+          title="Best Sellers in Women's Clothing"
+        />
+        <BestSellers products={jewelery} title="Best Sellers in Jewelery" /> */}
+
+        {/* Product Feed */}
+        <div className="grid grid-flow-row-dense md:grid-cols-2 lg:grid-cols-4">
+          <AdBlock
+            title="Always the perfect gift"
+            text="Shop Gift Cards"
+            image="adblock-10"
+          />
+          <AdBlock
+            title="Get an Amazon Gift Card for Your Old Device"
+            text="Learn More"
+            image="adblock-7"
+          />
+          <AdBlock
+            title="Lost Ark by Amazon Games"
+            text="Shop now"
+            image="adblock-8"
+          />
+          <AdBlock
+            title="Create, find, and share gift lists"
+            text="Discover"
+            image="adblock-9"
+          />
+        </div>
+        <LightningDeals products={products} title="Lightning Deals" />
+
+        <SimpleBlock title="Explore more Amazon Devices" />
+
+        <ProductFeed products={products} />
+      </main>
+      <Footer />
+    </div>
+  );
+};
+
+export default Home;
+
+// Pre-rendering data
+export async function getServerSideProps(context: any) {
+  const response1 = await fetch("https://fakestoreapi.com/products");
+  const products = await response1.json();
+
+  const response2 = await fetch(
+    "https://fakestoreapi.com/products/category/jewelery"
+  );
+  const jewelery = await response2.json();
+
+  const response3 = await fetch(
+    "https://fakestoreapi.com/products/category/men's%20clothing"
+  );
+  const mensClothing = await response3.json();
+
+  const response4 = await fetch(
+    "https://fakestoreapi.com/products/category/women's%20clothing"
+  );
+  const womensClothing = await response4.json();
+
+  const response5 = await fetch(
+    "https://fakestoreapi.com/products/category/electronics"
+  );
+  const electronics = await response5.json();
+  return {
+    props: {
+      products: products,
+      jewelery: jewelery,
+      womensClothing: womensClothing,
+      mensClothing: mensClothing,
+      electronics: electronics,
+    },
+  };
+}
 
 ```

@@ -13,7 +13,7 @@ type Props = {
 function AdBlock({ title, productTitle, text, image, deal }: Props) {
   return (
     <div className="bg-white z-30 m-5 p-5">
-      <h2 className="text-lg font-bold">{title}</h2>
+      <h2 className="text-xl font-bold">{title}</h2>
       <Image
         src={`/assets/${image}.jpg`}
         width={390}
