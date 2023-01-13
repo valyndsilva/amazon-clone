@@ -9,29 +9,33 @@ type Props = {
 };
 
 function LightiningDeals({ products, title }: Props) {
-  console.log(products);
+  // console.log(products);
   return (
-      <div className="m-5 bg-white p-5">
-        <div className="flex items-center space-x-4">
-          <h2 className="font-bold text-xl">{title}</h2>
-          <span className="text-sm text-amazonBlue-dark">See more</span>
-        </div>
-        <Carousel
-          autoPlay
-          infiniteLoop
-          showStatus={false}
-          showIndicators={false}
-          showThumbs={false}
-          interval={5000}
-          centerMode={true}
-          centerSlidePercentage={20}
-          className="carousel bg-white"
-        >
-          {products?.map((product, index) => (
-            <Deal key={index} productTitle={product.title} image={product.image} />
-          ))}
-        </Carousel>
+    <div className="m-5 bg-white p-5">
+      <div className="flex items-center space-x-4">
+        <h2 className="font-bold text-xl">{title}</h2>
+        <span className="text-sm text-amazonBlue-dark">See more</span>
       </div>
+      <Carousel
+        autoPlay
+        infiniteLoop
+        showStatus={false}
+        showIndicators={false}
+        showThumbs={false}
+        interval={5000}
+        centerMode={true}
+        centerSlidePercentage={20}
+        className="carousel bg-white"
+      >
+        {products?.map((product, index) => (
+          <Deal
+            key={index}
+            productTitle={product.title}
+            image={product.image}
+          />
+        ))}
+      </Carousel>
+    </div>
   );
 }
 

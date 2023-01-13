@@ -1,10 +1,12 @@
 import { StarIcon } from "@heroicons/react/24/solid";
 import Image from "next/image";
 import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 // import Currency from "react-currency-formatter";
+import { addToBasket } from "../redux/slices/basketSlice";
 
 type Props = {
-  product: Product;
+  product: any;
 };
 
 function Product({ product }: Props) {
@@ -14,10 +16,21 @@ function Product({ product }: Props) {
   //   const [rating] = useState(
   //     Math.floor(Math.random() * (MAX_RATING - MIN_RATING + 1)) + MIN_RATING
   //   );
-  const starRating = Math.floor(product.rating.rate);
+
+  // const starRating = Math.floor(product.rating.rate);
+  // To avoid invalid Array length Error:
+  const starRating = Math.max(0, Math.floor(product.rating?.rate));
 
   //Generate Random Prime Delivery Rating
   const [hasPrime] = useState(Math.random() < 0.5); // If less than 0.5 should have prime delivery
+
+  // Add to basket
+  const dispatch = useDispatch();
+  const addItemToBasket = () => {
+    const item = product;
+    //Push item as an action into REDUX store
+    dispatch(addToBasket(item));
+  };
   return (
     <div className="relative flex flex-col m-5 bg-white z-30 p-10">
       <p className="absolute top-2 right-2 text-xs italic text-gray-400">
@@ -58,7 +71,9 @@ function Product({ product }: Props) {
           <p className="text-xs text-gray-500">FREE Next-day delivery</p>
         </div>
       )}
-      <button className="mt-auto button">Add to Basket</button>
+      <button className="mt-auto button" onClick={addItemToBasket}>
+        Add to Basket
+      </button>
     </div>
   );
 }

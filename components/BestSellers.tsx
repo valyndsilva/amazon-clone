@@ -9,7 +9,7 @@ type Props = {
 };
 
 function BestSellers({ products, title }: Props) {
-  console.log(products);
+  // console.log(products);
   return (
     <div className="m-5">
       <div className="bg-white p-5">

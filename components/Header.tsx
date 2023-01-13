@@ -8,14 +8,27 @@ import {
   ShoppingCartIcon,
 } from "@heroicons/react/24/outline";
 import DropDown from "./DropDown";
+import { useSession, signIn, signOut } from "next-auth/react";
+import { DiffieHellmanGroup } from "crypto";
+import { useRouter } from "next/router";
+import { useSelector } from "react-redux";
+import { selectItems } from "../redux/slices/basketSlice";
+
 type Props = {};
 
 function Header({}: Props) {
+  const { data: session } = useSession();
+  // console.log(session);
+  const router = useRouter();
+  const items = useSelector(selectItems);
   return (
     <header>
       <div className="flex items-center bg-amazonBlue flex-grow p-2 py-2 space-x-2">
         {/* Logo */}
-        <div className="flex  items-center flex-grow sm:flex-grow-0 ">
+        <div
+          className="flex  items-center flex-grow sm:flex-grow-0"
+          onClick={() => router.push("/")}
+        >
           <div className="mt-2">
             <Image
               src="/amazon.png"
@@ -47,8 +60,16 @@ function Header({}: Props) {
           <MagnifyingGlassIcon className="h-10 p-2" />
         </div>
         <div className="text-white flex items-center text-xs space-x-6 mx-6 whitespace:no-wrap">
-          <div className="navLink ">
-            <p>Hello, sign in</p>
+          <div
+            className="navLink"
+            onClick={!session ? () => signIn() : () => signOut()}
+          >
+            {session ? (
+              <p>Hello, {session!.user!.name}</p>
+            ) : (
+              <p>Hello, sign in</p>
+            )}
+
             <p className="flex">
               <span className="font-extrabold md:text-sm">
                 Accounts & Lists
@@ -60,9 +81,12 @@ function Header({}: Props) {
             <p className="">Returns</p>
             <p className="font-extrabold md:text-sm">& Orders</p>
           </div>
-          <div className="relative navLink flex items-center">
+          <div
+            className="relative navLink flex items-center"
+            onClick={() => router.push("/checkout")}
+          >
             <span className="absolute top-0 right-0 md:right-10 h-4 w-4 bg-amazonYellow rounded-full text-center text-black font-bold">
-              1
+              {items?.length}
             </span>
             <ShoppingCartIcon className="h-10" />
             <p className="hidden md:inline-flex font-extrabold md:text-sm mt-2">
