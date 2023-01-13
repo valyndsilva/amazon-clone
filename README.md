@@ -7,6 +7,8 @@
 - [Typescript](https://www.typescriptlang.org/)
 - [@tailwindcss/line-clamp](https://www.npmjs.com/package/@tailwindcss/line-clamp)
 - [Fake Store API](https://fakestoreapi.com/)
+- [React Currenct Formatter](https://www.npmjs.com/package/react-currency-formatter)
+- [React Responsive Carousel](https://www.npmjs.com/package/react-responsive-carousel)
 - [Tailwind CSS](https://tailwindcss.com/docs/guides/nextjs)
 - [Hero Icons](https://heroicons.com/)
 - [Headless UI](https://headless.com/)
