@@ -11,6 +11,13 @@ import {
   ProductFeed,
   SimpleBlock,
 } from "../components";
+import {
+  fetchElectronics,
+  fetchJewelery,
+  fetchMensClothing,
+  fetchProducts,
+  fetchWomensClothing,
+} from "../utils";
 
 type Props = {
   products: Product[];
@@ -146,28 +153,37 @@ export default Home;
 
 // Pre-rendering data
 export async function getServerSideProps(context: any) {
-  const response1 = await fetch("https://fakestoreapi.com/products");
-  const products = await response1.json();
+  // const response1 = await fetch("https://fakestoreapi.com/products");
+  // const products = await response1.json();
 
-  const response2 = await fetch(
-    "https://fakestoreapi.com/products/category/jewelery"
-  );
-  const jewelery = await response2.json();
+  // const response2 = await fetch(
+  //   "https://fakestoreapi.com/products/category/jewelery"
+  // );
+  // const jewelery = await response2.json();
 
-  const response3 = await fetch(
-    "https://fakestoreapi.com/products/category/men's%20clothing"
-  );
-  const mensClothing = await response3.json();
+  // const response3 = await fetch(
+  //   "https://fakestoreapi.com/products/category/men's%20clothing"
+  // );
+  // const mensClothing = await response3.json();
 
-  const response4 = await fetch(
-    "https://fakestoreapi.com/products/category/women's%20clothing"
-  );
-  const womensClothing = await response4.json();
+  // const response4 = await fetch(
+  //   "https://fakestoreapi.com/products/category/women's%20clothing"
+  // );
+  // const womensClothing = await response4.json();
 
-  const response5 = await fetch(
-    "https://fakestoreapi.com/products/category/electronics"
-  );
-  const electronics = await response5.json();
+  // const response5 = await fetch(
+  //   "https://fakestoreapi.com/products/category/electronics"
+  // );
+  // const electronics = await response5.json();
+
+  const [products, jewelery, womensClothing, mensClothing, electronics] =
+    await Promise.all([
+      fetchProducts(),
+      fetchWomensClothing(),
+      fetchMensClothing(),
+      fetchJewelery(),
+      fetchElectronics(),
+    ]);
   return {
     props: {
       products: products,
