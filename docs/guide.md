@@ -553,6 +553,7 @@ To solve the common error: While resolving: react-currency-formatter@1.1.0 Found
 
 ```
 npm install react-currency-formatter --save --force
+npm install react-currency-formatter --legacy-peer-deps
 npm install --save --legacy-peer-deps
 npm cache clean --force
 npm config set legacy-peer-deps true
