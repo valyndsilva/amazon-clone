@@ -33,7 +33,7 @@ function Product({ product }: Props) {
       <h4 className="my-3">{product.title}</h4>
       <div className="flex">
         {Array(starRating)
-          .fill()
+          .fill(undefined)
           .map((_, index) => (
             <StarIcon className="h-5 text-yellow-500" />
           ))}
