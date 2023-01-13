@@ -549,6 +549,12 @@ npm i react-currency-formatter
 npm i --save-dev @types/react-currency-formatter
 ```
 
+To solve the common error: While resolving: react-currency-formatter@1.1.0 Found: react@18.2.0
+
+```
+npm install react-currency-formatter --save --force
+```
+
 ### Create typings.d.ts in the root:
 
 ```
