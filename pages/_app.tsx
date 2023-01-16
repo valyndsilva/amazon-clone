@@ -6,6 +6,8 @@ import { SessionProvider } from "next-auth/react";
 import { Session } from "next-auth";
 import { persistor, store } from "../redux/store";
 import { PersistGate } from "redux-persist/integration/react";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function MyApp({
   Component,
@@ -23,6 +25,7 @@ function MyApp({
     <SessionProvider session={pageProps.session}>
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
+          <ToastContainer />
           <Component {...pageProps} />
         </PersistGate>
       </Provider>

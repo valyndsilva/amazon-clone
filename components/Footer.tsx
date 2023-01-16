@@ -84,8 +84,8 @@ function Footer({}: Props) {
           <Image src="/amazon.png" alt="Vercel Logo" width={72} height={16} />
         </span>
         <div className="text-bold text-xs items-center text-center break-words text-white py-3 px-3 space-x-4">
-          {places.map((place) => (
-            <Link href="#">{place}</Link>
+          {places.map((place,index) => (
+            <Link key={index} href="#">{place}</Link>
           ))}
         </div>
       </div>

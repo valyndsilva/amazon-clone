@@ -1,3 +1,4 @@
+import { getSession } from "next-auth/react";
 import Head from "next/head";
 import Image from "next/image";
 import {
@@ -34,6 +35,12 @@ const Home = ({
   mensClothing,
   womensClothing,
 }: Props) => {
+  // console.log(products);
+  // console.log(jewelery);
+  // console.log(electronics);
+  // console.log(mensClothing);
+  // console.log(womensClothing);
+
   return (
     <div className="bg-gray-100">
       <Head>
@@ -109,11 +116,6 @@ const Home = ({
           products={electronics}
           title="Best Sellers in Computers & Accessories"
         />
-        {/* <BestSellers
-          products={womensClothing}
-          title="Best Sellers in Women's Clothing"
-        />
-        <BestSellers products={jewelery} title="Best Sellers in Jewelery" /> */}
 
         {/* Product Feed */}
         <div className="grid grid-flow-row-dense md:grid-cols-2 lg:grid-cols-4">
@@ -175,7 +177,7 @@ export async function getServerSideProps(context: any) {
   //   "https://fakestoreapi.com/products/category/electronics"
   // );
   // const electronics = await response5.json();
-
+  const session = await getSession(context);
   const [products, jewelery, womensClothing, mensClothing, electronics] =
     await Promise.all([
       fetchProducts(),
@@ -191,6 +193,7 @@ export async function getServerSideProps(context: any) {
       womensClothing: womensClothing,
       mensClothing: mensClothing,
       electronics: electronics,
+      session,
     },
   };
 }

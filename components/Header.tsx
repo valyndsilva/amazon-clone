@@ -9,7 +9,6 @@ import {
 } from "@heroicons/react/24/outline";
 import DropDown from "./DropDown";
 import { useSession, signIn, signOut } from "next-auth/react";
-import { DiffieHellmanGroup } from "crypto";
 import { useRouter } from "next/router";
 import { useSelector } from "react-redux";
 import { selectItems } from "../redux/slices/basketSlice";
@@ -20,7 +19,8 @@ function Header({}: Props) {
   const { data: session } = useSession();
   // console.log(session);
   const router = useRouter();
-  const items = useSelector(selectItems);
+  const { totalItemQty } = useSelector((state: any) => state.basket);
+
   return (
     <header>
       <div className="flex items-center bg-amazonBlue flex-grow p-2 py-2 space-x-2">
@@ -77,7 +77,7 @@ function Header({}: Props) {
               <ChevronDownIcon className="w-3 h-4" />
             </p>
           </div>
-          <div className="navLink ">
+          <div className="navLink " onClick={() => router.push("/orders")}>
             <p className="">Returns</p>
             <p className="font-extrabold md:text-sm">& Orders</p>
           </div>
@@ -86,7 +86,7 @@ function Header({}: Props) {
             onClick={() => router.push("/checkout")}
           >
             <span className="absolute top-0 right-0 md:right-10 h-4 w-4 bg-amazonYellow rounded-full text-center text-black font-bold">
-              {items?.length}
+              {totalItemQty}
             </span>
             <ShoppingCartIcon className="h-10" />
             <p className="hidden md:inline-flex font-extrabold md:text-sm mt-2">

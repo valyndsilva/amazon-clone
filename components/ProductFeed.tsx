@@ -21,7 +21,9 @@ function ProductFeed({ products }: Props) {
       />
       {/* {products?.slice(5, products.length).map((product) => ( */}
       {products?.slice(5, 13).map((product) => (
-        <Product key={product.id} product={product} />
+        <div key={product.id}>
+          <Product  product={product} />
+        </div>
       ))}
     </div>
   );

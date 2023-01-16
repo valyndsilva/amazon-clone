@@ -3,7 +3,13 @@ import Image from "next/image";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 // import Currency from "react-currency-formatter";
-import { addToBasket } from "../redux/slices/basketSlice";
+import {
+  addToBasket,
+  getBasketCount,
+  getSubTotal,
+  getTax,
+  getTotalAmount,
+} from "../redux/slices/basketSlice";
 
 type Props = {
   product: any;
@@ -26,10 +32,13 @@ function Product({ product }: Props) {
 
   // Add to basket
   const dispatch = useDispatch();
-  const addItemToBasket = () => {
-    const item = product;
+  const handleAddToBasket = (product: any) => {
     //Push item as an action into REDUX store
-    dispatch(addToBasket(item));
+    dispatch(addToBasket(product));
+    dispatch(getBasketCount());
+    dispatch(getTax());
+    dispatch(getSubTotal());
+    dispatch(getTotalAmount());
   };
   return (
     <div className="relative flex flex-col m-5 bg-white z-30 p-10">
@@ -48,7 +57,7 @@ function Product({ product }: Props) {
         {Array(starRating)
           .fill(undefined)
           .map((_, index) => (
-            <StarIcon className="h-5 text-yellow-500" />
+            <StarIcon key={index} className="h-5 text-yellow-500" />
           ))}
       </div>
       <p className="text-xs my-2 line-clamp-2">{product.description}</p>
@@ -71,7 +80,10 @@ function Product({ product }: Props) {
           <p className="text-xs text-gray-500">FREE Next-day delivery</p>
         </div>
       )}
-      <button className="mt-auto button" onClick={addItemToBasket}>
+      <button
+        className="mt-auto button"
+        onClick={() => handleAddToBasket(product)}
+      >
         Add to Basket
       </button>
     </div>

@@ -9,15 +9,21 @@
     "@headlessui/react": "^1.7.7",
     "@heroicons/react": "^2.0.13",
     "@reduxjs/toolkit": "^1.9.1",
+    "@stripe/stripe-js": "^1.46.0",
+    "axios": "^1.2.2",
     "firebase": "^9.15.0",
     "firebase-admin": "^11.4.1",
+    "micro": "^10.0.1",
+    "moment": "^2.29.4",
     "next": "latest",
     "next-auth": "^4.18.8",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-redux": "^8.0.5",
     "react-responsive-carousel": "^3.2.23",
-    "redux-persist": "^6.0.0"
+    "react-toastify": "^9.1.1",
+    "redux-persist": "^6.0.0",
+    "stripe": "^11.6.0"
   },
   "devDependencies": {
     "@tailwindcss/line-clamp": "^0.4.2",

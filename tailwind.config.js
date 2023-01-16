@@ -11,6 +11,7 @@ module.exports = {
         amazonBlue: {
           light: "#232F3E",
           lighter: "#37475A",
+          link: "#227185",
           dark: "#398596",
           DEFAULT: "#131921",
         },
