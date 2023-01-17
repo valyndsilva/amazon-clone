@@ -16,7 +16,11 @@ function BestSellers({ products, title }: Props) {
       <div className="bg-white p-5">
         <h2 className="font-bold text-xl">{title}</h2>
         <Carousel
-          // autoPlay
+          autoPlay
+          stopOnHover
+          swipeable
+          dynamicHeight
+          emulateTouch
           infiniteLoop
           showStatus={false}
           showIndicators={false}
