@@ -20,9 +20,69 @@
 
 ## Demo
 
-Checkout the [demo here](https://amazon-clone-valyndsilva.vercel.app/)
+Checkout the [demo here](https://amazon.valynsilva.com/)
 
-### Dark Mode
+### Sign In
+
+![](/public/gifs/.gif)
+
+[Expand](/public/demos/.mp4)
+
+### BestSellers
+
+![](/public/gifs/.gif)
+
+[Expand](/public/demos/.mp4)
+
+### Lightning Deals
+
+![](/public/gifs/.gif)
+
+[Expand](/public/demos/.mp4)
+
+### Product Details Page
+
+![](/public/gifs/.gif)
+
+[Expand](/public/demos/.mp4)
+
+### Add To Basket
+
+![](/public/gifs/.gif)
+
+[Expand](/public/demos/.mp4)
+
+### Checkout
+
+![](/public/gifs/.gif)
+
+[Expand](/public/demos/.mp4)
+
+#### Increment Quantity of an Item
+
+![](/public/gifs/.gif)
+
+[Expand](/public/demos/.mp4)
+
+#### Decrement Quantity of an Item
+
+![](/public/gifs/.gif)
+
+[Expand](/public/demos/.mp4)
+
+#### Remove / Delete an Item From the Basket
+
+![](/public/gifs/.gif)
+
+[Expand](/public/demos/.mp4)
+
+#### Proceed to checkout (Stripe Checkout)
+
+![](/public/gifs/.gif)
+
+[Expand](/public/demos/.mp4)
+
+### Orders
 
 ![](/public/gifs/.gif)
 

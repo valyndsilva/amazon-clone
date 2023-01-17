@@ -85,7 +85,7 @@ const Home = ({
                   </h2>
                   <p className="text-md mb-2">
                     {" "}
-                    You can sign out of Amazon from here...
+                    You can sign out of Amazon here...
                   </p>
                   <button className="mt-auto button" onClick={() => signOut()}>
                     Sign out

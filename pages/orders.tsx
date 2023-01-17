@@ -29,8 +29,8 @@ function orders({ orders, userName }: Props) {
         )}
 
         <div className="mt-5 space-y-4">
-          {orders?.map((order) => (
-            <div key={order.id}>
+          {orders?.map((order,index) => (
+            <div key={index}>
               <Order order={order} userName={userName} />
             </div>
           ))}
@@ -52,8 +52,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession(context);
   //   console.log({ session });
   //   console.log("User email:", session!.user?.email);
-  const userEmail = session!.user?.email as any;
-  const userName = session!.user?.name;
+  const userEmail = session?.user?.email as any;
+  const userName = session?.user?.name;
 
   if (!session) {
     return {
@@ -71,16 +71,17 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   //Firebsae V9
   //   Collection Reference
   const collectionRef = collection(db, "users", userEmail, "orders");
-  //   const filter = orderBy("timestamp", "desc");
-
+  const filter = orderBy("timestamp", "desc");
   //   const querySnapshot = await getDocs(collectionRef, filter);
   //   querySnapshot.forEach((doc) => {
   //     console.log(doc.data());
   //   });
 
-  //   const stripeOrders = await getDocs(collectionRef, filter);
-  const stripeOrders = await getDocs(collectionRef);
-  //   console.log(stripeOrders);
+  const q = query(collectionRef, filter);
+  const stripeOrders = await getDocs(q);
+  // const stripeOrders = await getDocs(collectionRef, filter);
+  // const stripeOrders = await getDocs(collectionRef);
+  // console.log(stripeOrders);
 
   // Stripe orders
   const orders = await Promise.all(

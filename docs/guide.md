@@ -3112,7 +3112,7 @@ const Home = ({
                   </h2>
                   <p className="text-md mb-2">
                     {" "}
-                    You can sign out of Amazon from here...
+                    You can sign out of Amazon here...
                   </p>
                   <button className="mt-auto button" onClick={() => signOut()}>
                     Sign out
@@ -3451,6 +3451,7 @@ import {
 } from "../redux/slices/basketSlice";
 import { loadStripe } from "@stripe/stripe-js";
 import axios from "axios";
+import Link from "next/link";
 
 const stripePromise = loadStripe(`${process.env.stripe_public_key}`);
 
@@ -3516,17 +3517,27 @@ function checkout({}: Props) {
           <div className="flex flex-col p-5 space-y-10 bg-white">
             <h1 className="text-3xl border-b pb-4">
               {items?.length === 0
-                ? "Your Amazon Basket is empty"
+                ? "Your Amazon Cart is empty"
                 : "Shopping Basket"}
             </h1>
+            {items?.length === 0 && (
+              <p className="pb-4">
+                Check your{" "}
+                <span className="text-amazonBlue-link">saved for later</span>{" "}
+                items below or{" "}
+                <Link href="/" className="text-amazonBlue-link">
+                  continue shopping.
+                </Link>
+              </p>
+            )}
             {items?.map((item: Product) => (
               <CheckoutProduct key={item.id} product={item} />
             ))}
           </div>
         </div>
         {/* Right */}
-        <div className="flex flex-col bg-white p-10 shadow-md m-5">
-          {items?.length > 0 && (
+        {items?.length > 0 && (
+          <div className="flex flex-col bg-white p-10 shadow-md m-5">
             <>
               <h2 className="whitespace-nowrap text-sm">
                 {/* Subtotal ({items.length} items): */}
@@ -3562,8 +3573,8 @@ function checkout({}: Props) {
                 {!session ? "Sign in to checkout" : "Proceed to checkout"}
               </button>
             </>
-          )}
-        </div>
+          </div>
+        )}
       </main>
       <Footer />
     </div>
@@ -3937,8 +3948,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession(context);
   //   console.log({ session });
   //   console.log("User email:", session!.user?.email);
-  const userEmail = session!.user?.email as any;
-  const userName = session!.user?.name;
+  const userEmail = session?.user?.email as any;
+  const userName = session?.user?.name;
 
   if (!session) {
     return {
@@ -3956,16 +3967,17 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   //Firebsae V9
   //   Collection Reference
   const collectionRef = collection(db, "users", userEmail, "orders");
-  //   const filter = orderBy("timestamp", "desc");
-
+  const filter = orderBy("timestamp", "desc");
   //   const querySnapshot = await getDocs(collectionRef, filter);
   //   querySnapshot.forEach((doc) => {
   //     console.log(doc.data());
   //   });
 
-  //   const stripeOrders = await getDocs(collectionRef, filter);
-  const stripeOrders = await getDocs(collectionRef);
-  //   console.log(stripeOrders);
+  const q = query(collectionRef, filter);
+  const stripeOrders = await getDocs(q);
+  // const stripeOrders = await getDocs(collectionRef, filter);
+  // const stripeOrders = await getDocs(collectionRef);
+  console.log(stripeOrders);
 
   // Stripe orders
   const orders = await Promise.all(
@@ -3994,8 +4006,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 ```
 
 ## Create components/Order.tsx:
-
-Create pages/orders.tsx:
 
 ```
 import React from "react";
