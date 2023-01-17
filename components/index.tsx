@@ -2,6 +2,8 @@ export { default as Header } from "./Header";
 export { default as DropDown } from "./DropDown";
 export { default as Banner } from "./Banner";
 export { default as ProductFeed } from "./ProductFeed";
+export { default as Product } from "./Product";
+export { default as ProductDetails } from "./ProductDetails";
 export { default as AdBlock } from "./AdBlock";
 export { default as BestSellers } from "./BestSellers";
 export { default as Deals } from "./Deals";

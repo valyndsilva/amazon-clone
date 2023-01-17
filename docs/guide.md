@@ -309,7 +309,7 @@ function DropDown() {
         <span className="text-sm">All</span>
         <ChevronDownIcon className="w-3 h-4" />
       </Menu.Button>
-      <Menu.Items className="flex flex-col absolute w-fit p-2 top-12 bg-amazonGray/95 rounded-md">
+      <Menu.Items className="flex flex-col absolute w-fit p-2 top-12 bg-amazonGray/95 rounded-md z-50">
         {links.map((link) => (
           <Menu.Item
             as="a"
@@ -911,6 +911,7 @@ import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a lo
 import { Carousel } from "react-responsive-carousel";
 import Product from "./Product";
 import Image from "next/image";
+import Link from "next/link";
 type Props = {
   products: Product[];
   title: string;
@@ -923,7 +924,7 @@ function BestSellers({ products, title }: Props) {
       <div className="bg-white p-5">
         <h2 className="font-bold text-xl">{title}</h2>
         <Carousel
-          autoPlay
+          // autoPlay
           infiniteLoop
           showStatus={false}
           showIndicators={false}
@@ -931,17 +932,24 @@ function BestSellers({ products, title }: Props) {
           interval={5000}
           centerMode={true}
           centerSlidePercentage={20}
-          className="carousel bg-white"
+          className="carousel bestsellerCarousel bg-white"
         >
           {products?.map((product, index) => (
-            <Image
+            <Link
               key={index}
-              src={product.image}
-              alt={product.title}
-              width={180}
-              height={250}
-              className=" bg-white p-5 h-60 object-contain"
-            />
+              href={`/product/${product.id}`}
+              className="cursor-pointer"
+            >
+              <div>
+                <Image
+                  src={product.image}
+                  alt={product.title}
+                  width={320}
+                  height={230}
+                  className=" bg-white cursor-pointer py-3 p-5 h-60 object-contain mx-auto"
+                />
+              </div>
+            </Link>
           ))}
         </Carousel>
       </div>
@@ -1067,23 +1075,28 @@ export default SimpleBlock;
 
 ```
 import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/router";
 import React from "react";
 
 type Props = {
   productTitle: string;
   image: string;
+  id: string;
 };
 
-function Deal({ image, productTitle }: Props) {
+function Deal({ image, productTitle, id }: Props) {
   return (
-    <div>
-      <Image
-        src={image}
-        width={390}
-        height={390}
-        alt={productTitle}
-        className="object-contain mx-auto py-3 p-5 h-60"
-      />
+    <Link href={`/product/${id}`}>
+      <div>
+        <Image
+          src={image}
+          width={390}
+          height={390}
+          alt={productTitle}
+          className="object-contain mx-auto py-3 p-5 h-60 cursor-pointer"
+        />
+      </div>
       <div className="flex space-x-2 items-center">
         <span className="bg-red-700 px-1 py-2 text-xs text-white">
           Up to 50% off
@@ -1091,7 +1104,7 @@ function Deal({ image, productTitle }: Props) {
         <span className="text-red-700 p-1 font-bold text-xs">Deal</span>
       </div>
       <p className="text-xs pt-2 pb-5">{productTitle}</p>
-    </div>
+    </Link>
   );
 }
 
@@ -1126,6 +1139,189 @@ function Deals({ title, productTitle, text, image }: Props) {
 }
 
 export default Deals;
+
+```
+
+### Create pages/product/[id].tsx:
+
+```
+import { useRouter } from "next/router";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Footer, Header, ProductDetails } from "../../components";
+import { getBasketCount, getSubTotal, getTotalAmount } from "../../redux/slices/basketSlice";
+
+type Props = {
+  product: any;
+};
+
+function Id({ product }: Props) {
+  // console.log(product);
+ const dispatch = useDispatch();
+
+   useEffect(() => {
+     dispatch(getBasketCount());
+    //  dispatch(getTax());
+     dispatch(getSubTotal());
+     dispatch(getTotalAmount());
+   }, [dispatch]);
+
+  return (
+    <div>
+      <Header />
+      <main>
+        <ProductDetails key={product.id} product={product} />
+      </main>
+      <Footer/>
+    </div>
+  );
+}
+
+export default Id;
+
+export async function getServerSideProps(context: any) {
+  const id = context.params.id; // Get ID from `/product/1`
+  const response = await fetch(`https://fakestoreapi.com/products/${id}`);
+  const product = await response.json();
+  console.log(product);
+
+  return {
+    props: { product },
+  };
+}
+
+```
+
+### Create components/ProductDetails.tsx:
+
+```
+import { MinusCircleIcon, PlusCircleIcon } from "@heroicons/react/24/outline";
+import { StarIcon } from "@heroicons/react/24/solid";
+import Image from "next/image";
+import Link from "next/link";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+// import Currency from "react-currency-formatter";
+import {
+  addToBasket,
+  getBasketCount,
+  getSubTotal,
+  getTax,
+  getTotalAmount,
+} from "../redux/slices/basketSlice";
+
+type Props = {
+  product: any;
+};
+
+function Product({ product }: Props) {
+  // Generate Random Rating
+  //   const MAX_RATING = 5;
+  //   const MIN_RATING = 1;
+  //   const [rating] = useState(
+  //     Math.floor(Math.random() * (MAX_RATING - MIN_RATING + 1)) + MIN_RATING
+  //   );
+
+  // const starRating = Math.floor(product.rating.rate);
+  // To avoid invalid Array length Error:
+  const starRating = Math.max(0, Math.floor(product.rating?.rate));
+
+  //Generate Random Prime Delivery Rating
+  const [hasPrime] = useState(Math.random() < 0.5); // If less than 0.5 should have prime delivery
+
+  // Add to basket
+  const dispatch = useDispatch();
+
+  const handleAddToBasket = (product: any) => {
+    //Push item as an action into REDUX store
+    dispatch(addToBasket(product));
+
+    dispatch(getBasketCount());
+    dispatch(getTax());
+    dispatch(getSubTotal());
+    dispatch(getTotalAmount());
+  };
+  return (
+    <div className="flex flex-col md:grid md:grid-cols-7 md:gap-6 md:m-5 bg-white z-30 p-5 items-center">
+      <div className="w-full md:col-span-2  mx-5">
+        <Image
+          src={product.image}
+          alt={product.title}
+          height={200}
+          width={200}
+          className="object-contain mx-auto h-60 cursor-pointer"
+        />
+      </div>
+      <div className="w-full  md:col-span-3 mx-5">
+        <h4 className="my-3 text-2xl">{product.title}</h4>
+        <div className="flex">
+          {Array(starRating)
+            .fill(undefined)
+            .map((_, index) => (
+              <StarIcon key={index} className="h-5 text-yellow-500" />
+            ))}
+        </div>
+        <p className="text-sm my-2">{product.description}</p>
+        <span className="font-semibold text-xl"> £{product.price}</span>
+        {hasPrime && (
+          <div className="flex items-center space-x-2 ">
+            <Image
+              src="/assets/amazon-prime.png"
+              alt="prime delivery"
+              width={48}
+              height={48}
+              className=""
+            />
+            <p className="text-xs text-gray-500">FREE Next-day delivery</p>
+          </div>
+        )}
+      </div>
+      <div className="w-full md:col-span-2 mx-5">
+        <span className="hidden md:inline-flex font-semibold text-xl">
+          {" "}
+          £{product.price}
+        </span>
+        {hasPrime && (
+          <div className="flex items-center space-x-2">
+            <Image
+              src="/assets/amazon-prime.png"
+              alt="prime delivery"
+              width={48}
+              height={48}
+              className=""
+            />
+            <p className="text-xs text-gray-500">FREE Next-day delivery</p>
+          </div>
+        )}
+        <p className="text-sm">
+          FREE Next-day delivery{" "}
+          <span className="font-bold">
+            {" "}
+            Tomorrow,
+            {new Date().toLocaleString("default", { month: "long" })}{" "}
+            {new Date().getDate() + 1}.
+          </span>{" "}
+        </p>
+        <p className="text-sm">
+          {" "}
+          Order within <span className="text-green-700">3 hrs 10 mins</span>.
+          Details
+        </p>
+
+        <p className="text-lg text-green-700 my-2">In stock.</p>
+
+        <button
+          className="mt-auto button"
+          onClick={() => handleAddToBasket(product)}
+        >
+          Add to Basket
+        </button>
+      </div>
+    </div>
+  );
+}
+
+export default Product;
 
 ```
 
@@ -1852,6 +2048,7 @@ export default basketSlice.reducer;
 ```
 import { StarIcon } from "@heroicons/react/24/solid";
 import Image from "next/image";
+import Link from "next/link";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 // import Currency from "react-currency-formatter";
@@ -1897,29 +2094,32 @@ function Product({ product }: Props) {
       <p className="absolute top-2 right-2 text-xs italic text-gray-400">
         {product.category}
       </p>
-      <Image
-        src={product.image}
-        alt={product.title}
-        height={200}
-        width={200}
-        className="object-contain mx-auto h-60"
-      />
-      <h4 className="my-3">{product.title}</h4>
-      <div className="flex">
-        {Array(starRating)
-          .fill(undefined)
-          .map((_, index) => (
-            <StarIcon key={index} className="h-5 text-yellow-500" />
-          ))}
-      </div>
-      <p className="text-xs my-2 line-clamp-2">{product.description}</p>
-      <div className="mb-5">
-        {/* <Currency
+      <Link href={`/product/${product.id}`}>
+        <Image
+          src={product.image}
+          alt={product.title}
+          height={200}
+          width={200}
+          className="object-contain mx-auto h-60 cursor-pointer"
+        />
+
+        <h4 className="my-3">{product.title}</h4>
+        <div className="flex">
+          {Array(starRating)
+            .fill(undefined)
+            .map((_, index) => (
+              <StarIcon key={index} className="h-5 text-yellow-500" />
+            ))}
+        </div>
+        <p className="text-xs my-2 line-clamp-2">{product.description}</p>
+        <div className="mb-5">
+          {/* <Currency
           quantity={Number(product.price)}
           currency="GBP"
         /> */}
-        £{product.price}
-      </div>
+          £{product.price}
+        </div>
+      </Link>
       {hasPrime && (
         <div className="flex items-center space-x-2 -mt-5">
           <Image
@@ -1943,6 +2143,7 @@ function Product({ product }: Props) {
 }
 
 export default Product;
+
 
 ```
 
@@ -2076,6 +2277,15 @@ function Header({}: Props) {
           </div>
         </div>
       </div>
+      {/* Search on small screens */}
+      <div className="flex sm:hidden flex-grow cursor-pointer h-10 bg-amazonYellow hover:bg-amazonYellow-hover">
+        <DropDown />
+        <input
+          className="p-2 h-full w-6 flex-grow flex-shrink focus:outline-none px-4"
+          type="text"
+        />
+        <MagnifyingGlassIcon className="h-10 p-2" />
+      </div>
       {/* Links */}
       <div className="flex items-center bg-amazonBlue-light text-white text-sm space-x-5 p-2 pl-6">
         <p className="link flex items-center">
@@ -2099,6 +2309,7 @@ function Header({}: Props) {
 }
 
 export default Header;
+
 
 ```
 
@@ -2216,19 +2427,7 @@ function CheckoutProduct({ product }: Props) {
 
   // Add to basket
   const dispatch = useDispatch();
-  // const { subAmount, tax, totalAmount } = useSelector(
-  //   (state: any) => state.basket
-  // );
-  // console.log(subAmount, tax, totalAmount);
 
-  // const handleAddToBasket = (product: any) => {
-  //   //Push item as an action into REDUX store
-  //   dispatch(addToBasket(product));
-  //   dispatch(getBasketCount());
-  //   dispatch(getTax());
-  //   dispatch(getSubTotal());
-  //   dispatch(getTotalAmount());
-  // };
   const handleRemoveFromBasket = (id: any) => {
     //Push item as an action into REDUX store
     dispatch(removeFromBasket(id));
@@ -2326,6 +2525,7 @@ function CheckoutProduct({ product }: Props) {
 }
 
 export default CheckoutProduct;
+
 
 ```
 
@@ -2825,6 +3025,7 @@ export default fetchElectronics;
 ### Update pages/index.tsx:
 
 ```
+import { getSession, signIn, signOut, useSession } from "next-auth/react";
 import Head from "next/head";
 import Image from "next/image";
 import {
@@ -2861,6 +3062,12 @@ const Home = ({
   mensClothing,
   womensClothing,
 }: Props) => {
+  // console.log(products);
+  // console.log(jewelery);
+  // console.log(electronics);
+  // console.log(mensClothing);
+  // console.log(womensClothing);
+  const { data: session } = useSession();
   return (
     <div className="bg-gray-100">
       <Head>
@@ -2898,10 +3105,29 @@ const Home = ({
               className="object-cover mx-auto py-3"
             />
             <div className="flex flex-col bg-white p-5">
-              <h2 className="text-lg font-bold mb-2">
-                Sign in for your best experience
-              </h2>
-              <button className="mt-auto button">Sign in securely</button>
+              {session ? (
+                <>
+                  <h2 className="text-lg font-bold mb-2">
+                    Hello, {session.user?.name}
+                  </h2>
+                  <p className="text-md mb-2">
+                    {" "}
+                    You can sign out of Amazon from here...
+                  </p>
+                  <button className="mt-auto button" onClick={() => signOut()}>
+                    Sign out
+                  </button>
+                </>
+              ) : (
+                <>
+                  <h2 className="text-lg font-bold mb-2">
+                    Sign in for your best experience
+                  </h2>
+                  <button className="mt-auto button" onClick={() => signIn()}>
+                    Sign in securely
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -2929,18 +3155,14 @@ const Home = ({
         </div>
 
         <BestSellers
-          products={mensClothing}
-          title="Best Sellers in Men's Clothing"
-        />
-        <BestSellers
           products={electronics}
           title="Best Sellers in Computers & Accessories"
         />
-        {/* <BestSellers
-          products={womensClothing}
-          title="Best Sellers in Women's Clothing"
+
+        <BestSellers
+          products={mensClothing}
+          title="Best Sellers in Men's Clothing"
         />
-        <BestSellers products={jewelery} title="Best Sellers in Jewelery" /> */}
 
         {/* Product Feed */}
         <div className="grid grid-flow-row-dense md:grid-cols-2 lg:grid-cols-4">
@@ -3002,13 +3224,13 @@ export async function getServerSideProps(context: any) {
   //   "https://fakestoreapi.com/products/category/electronics"
   // );
   // const electronics = await response5.json();
-
+  const session = await getSession(context);
   const [products, jewelery, womensClothing, mensClothing, electronics] =
     await Promise.all([
       fetchProducts(),
+      fetchJewelery(),
       fetchWomensClothing(),
       fetchMensClothing(),
-      fetchJewelery(),
       fetchElectronics(),
     ]);
   return {
@@ -3018,6 +3240,7 @@ export async function getServerSideProps(context: any) {
       womensClothing: womensClothing,
       mensClothing: mensClothing,
       electronics: electronics,
+      session,
     },
   };
 }
@@ -3884,6 +4107,7 @@ import { toast } from "react-toastify";
 const initialState = {
   items: [],
   totalItemQty: 0,
+  // itemQty: 0,
   // totalBasketQty: 0,
   tax: 0,
   subAmount: 0,
@@ -4014,4 +4238,19 @@ export const selectItems = (state: any) => state.basket?.items;
 
 export default basketSlice.reducer;
 
+
 ```
+
+## Add Env Variable to Vercel
+
+```
+npm install vercel
+vercel login
+vercel add env
+Enter the name and value of the variable
+```
+
+## Get STRIPE_SIGNING_SECRET for production
+
+Got to Stripe Dashboard > Developers > Webhooks > Add Endpoint > Endpoint URL: https://amazon-clone-valyndsilva.vercel.app/ > Select events: checkout.session.completed > Add Endpoint
+This generates a signing secret. Update your env variable STRIPE_SIGNIN_SECRET with this. Redploy your project on vercel.

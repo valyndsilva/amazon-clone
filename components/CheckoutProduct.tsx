@@ -36,19 +36,7 @@ function CheckoutProduct({ product }: Props) {
 
   // Add to basket
   const dispatch = useDispatch();
-  // const { subAmount, tax, totalAmount } = useSelector(
-  //   (state: any) => state.basket
-  // );
-  // console.log(subAmount, tax, totalAmount);
 
-  // const handleAddToBasket = (product: any) => {
-  //   //Push item as an action into REDUX store
-  //   dispatch(addToBasket(product));
-  //   dispatch(getBasketCount());
-  //   dispatch(getTax());
-  //   dispatch(getSubTotal());
-  //   dispatch(getTotalAmount());
-  // };
   const handleRemoveFromBasket = (id: any) => {
     //Push item as an action into REDUX store
     dispatch(removeFromBasket(id));

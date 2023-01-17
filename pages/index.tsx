@@ -1,4 +1,4 @@
-import { getSession } from "next-auth/react";
+import { getSession, signIn, signOut, useSession } from "next-auth/react";
 import Head from "next/head";
 import Image from "next/image";
 import {
@@ -40,7 +40,7 @@ const Home = ({
   // console.log(electronics);
   // console.log(mensClothing);
   // console.log(womensClothing);
-
+  const { data: session } = useSession();
   return (
     <div className="bg-gray-100">
       <Head>
@@ -78,10 +78,29 @@ const Home = ({
               className="object-cover mx-auto py-3"
             />
             <div className="flex flex-col bg-white p-5">
-              <h2 className="text-lg font-bold mb-2">
-                Sign in for your best experience
-              </h2>
-              <button className="mt-auto button">Sign in securely</button>
+              {session ? (
+                <>
+                  <h2 className="text-lg font-bold mb-2">
+                    Hello, {session.user?.name}
+                  </h2>
+                  <p className="text-md mb-2">
+                    {" "}
+                    You can sign out of Amazon from here...
+                  </p>
+                  <button className="mt-auto button" onClick={() => signOut()}>
+                    Sign out
+                  </button>
+                </>
+              ) : (
+                <>
+                  <h2 className="text-lg font-bold mb-2">
+                    Sign in for your best experience
+                  </h2>
+                  <button className="mt-auto button" onClick={() => signIn()}>
+                    Sign in securely
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -109,12 +128,13 @@ const Home = ({
         </div>
 
         <BestSellers
-          products={mensClothing}
-          title="Best Sellers in Men's Clothing"
-        />
-        <BestSellers
           products={electronics}
           title="Best Sellers in Computers & Accessories"
+        />
+
+        <BestSellers
+          products={mensClothing}
+          title="Best Sellers in Men's Clothing"
         />
 
         {/* Product Feed */}
@@ -181,9 +201,9 @@ export async function getServerSideProps(context: any) {
   const [products, jewelery, womensClothing, mensClothing, electronics] =
     await Promise.all([
       fetchProducts(),
+      fetchJewelery(),
       fetchWomensClothing(),
       fetchMensClothing(),
-      fetchJewelery(),
       fetchElectronics(),
     ]);
   return {

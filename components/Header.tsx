@@ -95,6 +95,15 @@ function Header({}: Props) {
           </div>
         </div>
       </div>
+      {/* Search on small screens */}
+      <div className="flex sm:hidden flex-grow cursor-pointer h-10 bg-amazonYellow hover:bg-amazonYellow-hover">
+        <DropDown />
+        <input
+          className="p-2 h-full w-6 flex-grow flex-shrink focus:outline-none px-4"
+          type="text"
+        />
+        <MagnifyingGlassIcon className="h-10 p-2" />
+      </div>
       {/* Links */}
       <div className="flex items-center bg-amazonBlue-light text-white text-sm space-x-5 p-2 pl-6">
         <p className="link flex items-center">

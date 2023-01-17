@@ -7,15 +7,15 @@
 - [Next-Auth](https://next-auth.js.org/)
 - [Typescript](https://www.typescriptlang.org/)
 - [Fake Store API](https://fakestoreapi.com/)
+- [Stripe API](https://stripe.com)
 - [React Currenct Formatter](https://www.npmjs.com/package/react-currency-formatter)
 - [React Responsive Carousel](https://www.npmjs.com/package/react-responsive-carousel)
 - [Tailwind CSS](https://tailwindcss.com/docs/guides/nextjs)
 - [@tailwindcss/line-clamp](https://www.npmjs.com/package/@tailwindcss/line-clamp)
 - [Hero Icons](https://heroicons.com/)
 - [Headless UI](https://headless.com/)
-- [React TimeAgo](https://www.npmjs.com/package/react-timeago)
-- [React Hot Toast](https://www.npmjs.com/package/react-timeago)
-- [React Form Hook](https://www.npmjs.com/package/react-timeago)
+- [Moment](https://www.npmjs.com/package/moment)
+- [React Toastify](https://www.npmjs.com/package/react-toastify)
 - [Vercel](https://vercel.com/)
 
 ## Demo

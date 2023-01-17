@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 const initialState = {
   items: [],
   totalItemQty: 0,
+  // itemQty: 0,
   // totalBasketQty: 0,
   tax: 0,
   subAmount: 0,

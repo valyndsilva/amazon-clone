@@ -1,5 +1,6 @@
 import { StarIcon } from "@heroicons/react/24/solid";
 import Image from "next/image";
+import Link from "next/link";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 // import Currency from "react-currency-formatter";
@@ -45,29 +46,32 @@ function Product({ product }: Props) {
       <p className="absolute top-2 right-2 text-xs italic text-gray-400">
         {product.category}
       </p>
-      <Image
-        src={product.image}
-        alt={product.title}
-        height={200}
-        width={200}
-        className="object-contain mx-auto h-60"
-      />
-      <h4 className="my-3">{product.title}</h4>
-      <div className="flex">
-        {Array(starRating)
-          .fill(undefined)
-          .map((_, index) => (
-            <StarIcon key={index} className="h-5 text-yellow-500" />
-          ))}
-      </div>
-      <p className="text-xs my-2 line-clamp-2">{product.description}</p>
-      <div className="mb-5">
-        {/* <Currency
+      <Link href={`/product/${product.id}`}>
+        <Image
+          src={product.image}
+          alt={product.title}
+          height={200}
+          width={200}
+          className="object-contain mx-auto h-60 cursor-pointer"
+        />
+
+        <h4 className="my-3">{product.title}</h4>
+        <div className="flex">
+          {Array(starRating)
+            .fill(undefined)
+            .map((_, index) => (
+              <StarIcon key={index} className="h-5 text-yellow-500" />
+            ))}
+        </div>
+        <p className="text-xs my-2 line-clamp-2">{product.description}</p>
+        <div className="mb-5">
+          {/* <Currency
           quantity={Number(product.price)}
           currency="GBP"
         /> */}
-        £{product.price}
-      </div>
+          £{product.price}
+        </div>
+      </Link>
       {hasPrime && (
         <div className="flex items-center space-x-2 -mt-5">
           <Image

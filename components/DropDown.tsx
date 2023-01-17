@@ -24,7 +24,7 @@ function DropDown() {
         <span className="text-sm">All</span>
         <ChevronDownIcon className="w-3 h-4" />
       </Menu.Button>
-      <Menu.Items className="flex flex-col absolute w-fit p-2 top-12 bg-amazonGray/95 rounded-md">
+      <Menu.Items className="flex flex-col absolute w-fit p-2 top-12 bg-amazonGray/95 rounded-md z-50">
         {links.map((link) => (
           <Menu.Item
             as="a"

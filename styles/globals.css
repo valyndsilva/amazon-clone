@@ -18,4 +18,7 @@
   .carousel .control-next.control-arrow:before {
     @apply !border-l-black;
   }
+  /* .bestsellerCarousel .slide {
+    @apply !max-w-[300px] !min-w-[230px];
+  } */
 }

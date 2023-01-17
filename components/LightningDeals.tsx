@@ -32,6 +32,7 @@ function LightiningDeals({ products, title }: Props) {
             key={index}
             productTitle={product.title}
             image={product.image}
+            id={product.id}
           />
         ))}
       </Carousel>
