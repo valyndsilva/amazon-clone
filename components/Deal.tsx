@@ -6,7 +6,7 @@ import React from "react";
 type Props = {
   productTitle: string;
   image: string;
-  id: string;
+  id?: string;
 };
 
 function Deal({ image, productTitle, id }: Props) {

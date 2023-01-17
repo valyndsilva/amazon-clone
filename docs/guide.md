@@ -4254,3 +4254,5 @@ Enter the name and value of the variable
 
 Got to Stripe Dashboard > Developers > Webhooks > Add Endpoint > Endpoint URL: https://amazon-clone-valyndsilva.vercel.app/ > Select events: checkout.session.completed > Add Endpoint
 This generates a signing secret. Update your env variable STRIPE_SIGNIN_SECRET with this. Redploy your project on vercel.
+
+If using a custom domain you would have to add the endpoint in stripe webhooks and update the STRIPE_SIGNING_SECRET in vercel env variables.
